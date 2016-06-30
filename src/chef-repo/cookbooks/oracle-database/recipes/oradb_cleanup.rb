@@ -1,9 +1,8 @@
-# coding: utf-8
 #
-# Cookbook Name:: custom-ssh-banner
-# Recipe:: default
+# Cookbook Name:: oracle-database
+# Recipe:: oradb_cleanup
 #
-# Copyright 2015 Oracle and/or its affiliates. 
+# Copyright 2015 Oracle
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,15 +16,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-log "Starting custom-ssh-banner recipe..."
 
-software_repo = "https://#{URI(Chef::Config[:chef_server_url]).host}:#{URI(Chef::Config[:chef_server_url]).port}/files"
-
-remote_file '/etc/custom-ssh-banner' do
-  source "#{software_repo}/custom-ssh-banner.txt"
-end
-
-remote_file '/etc/profile.d/custom-ssh-banner.sh' do
-  mode '0755'
-  source "#{software_repo}/custom-ssh-banner.sh"
+# Cleanup temp files during install
+bash "Cleanup temp files" do
+  user node['oracle']['user']
+  group node['oracle']['group']
+  code <<-EOH
+  cd "#{node['oracle']['stage']}"
+  rm -rf *
+  EOH
 end
